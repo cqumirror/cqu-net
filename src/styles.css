@@ -1,0 +1,83 @@
+:root {
+  color: #1f2d3d;
+  background: #fff;
+  font-family: "CMU Serif", "Latin Modern Roman", "Songti SC", SimSun, serif;
+  font-size: 18px;
+  line-height: 1.78;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+
+body { margin: 0; background: #fff; }
+
+#app {
+  width: min(50rem, calc(100% - 3rem));
+  margin: 0 auto;
+  padding: 3.2rem 0 5rem;
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  margin-bottom: 2.8rem;
+  padding-bottom: .9rem;
+  color: #174d8a;
+  border-bottom: 1px solid #d9e2eb;
+  font-size: .92rem;
+  letter-spacing: .04em;
+}
+
+.site-header img { border-radius: 50%; object-fit: cover; }
+
+.markdown-body > :first-child { margin-top: 0; }
+.markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 {
+  color: #174d8a;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.markdown-body h1 { margin: 0 0 1.6rem; font-size: 2rem; text-align: center; }
+.markdown-body h2 { margin: 3rem 0 1rem; font-size: 1.48rem; border-bottom: 1px solid #d9e2eb; padding-bottom: .32rem; }
+.markdown-body h3 { margin: 2rem 0 .65rem; font-size: 1.17rem; }
+.markdown-body h4 { margin: 1.45rem 0 .5rem; font-size: 1rem; }
+.markdown-body p { margin: .85rem 0; }
+.markdown-body a { color: #1256a0; text-decoration: none; border-bottom: 1px solid #a9c7e6; }
+.markdown-body a:hover { color: #0b3f78; border-bottom-color: currentColor; }
+.markdown-body strong { font-weight: 700; }
+.markdown-body em { font-style: italic; }
+
+.markdown-body blockquote {
+  margin: 1.2rem 0;
+  padding: .3rem 1.1rem;
+  color: #52606d;
+  border-left: .22rem solid #5f8fbe;
+  background: #f7faff;
+}
+.markdown-body blockquote > :first-child { margin-top: 0; }
+.markdown-body blockquote > :last-child { margin-bottom: 0; }
+.markdown-body ul, .markdown-body ol { padding-left: 1.5rem; }
+.markdown-body li + li { margin-top: .28rem; }
+
+.markdown-body table { display: block; width: max-content; max-width: 100%; margin: 1.2rem auto; overflow-x: auto; border-collapse: collapse; font-size: .9rem; }
+.markdown-body th, .markdown-body td { padding: .5rem .7rem; text-align: left; border: 1px solid #cdd8e3; }
+.markdown-body th { color: #173e69; background: #eff5fb; font-weight: 600; }
+.markdown-body tr:nth-child(even) { background: #f9fbfd; }
+
+.markdown-body code { padding: .08rem .28rem; color: #9d2933; background: #f5f5f5; border-radius: .16rem; font-family: "SFMono-Regular", Consolas, monospace; font-size: .82em; }
+.markdown-body pre { overflow-x: auto; padding: 1rem 1.15rem; background: #f6f8fa; border: 1px solid #e1e6eb; border-radius: .2rem; }
+.markdown-body pre code { padding: 0; color: inherit; background: none; }
+.markdown-body hr { height: 1px; margin: 2rem 0; border: 0; background: #d9e2eb; }
+.katex-display { overflow-x: auto; overflow-y: hidden; padding: .35rem 0; }
+
+.message { max-width: 38rem; margin: 12vh auto; padding: 1.5rem 1.7rem; border-left: .22rem solid #a73d45; background: #fff7f7; }
+.message h1 { margin: 0; color: #8e2730; font-size: 1.35rem; }
+.message p { margin-bottom: 0; }
+
+:root[data-layout="compact"] { font-size: 16px; }
+:root[data-layout="compact"] #app { width: min(100% - 2rem, 50rem); padding-top: 1.5rem; }
+:root[data-layout="compact"] .site-header { margin-bottom: 1.8rem; }
+:root[data-layout="compact"] .markdown-body h1 { font-size: 1.65rem; }
+:root[data-layout="compact"] .markdown-body h2 { margin-top: 2.2rem; font-size: 1.32rem; }
+:root[data-layout="compact"] .markdown-body th, :root[data-layout="compact"] .markdown-body td { padding: .42rem .55rem; }
