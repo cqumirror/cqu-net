@@ -20,6 +20,7 @@ body { margin: 0; background: #fff; }
 .site-header {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: .7rem;
   margin-bottom: 2.8rem;
   padding-bottom: .9rem;
@@ -30,6 +31,39 @@ body { margin: 0; background: #fff; }
 }
 
 .site-header img { border-radius: 50%; object-fit: cover; }
+
+.site-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-left: auto;
+}
+
+.download-hint {
+  margin-right: .3rem;
+  color: #8aa0b8;
+  font-size: .76rem;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+
+.download-button {
+  padding: .22rem .85rem;
+  color: #1256a0;
+  background: #f7faff;
+  border: 1px solid #c3d7ea;
+  border-radius: 999px;
+  font-size: .82rem;
+  letter-spacing: .02em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.download-button:hover {
+  color: #0b3f78;
+  background: #eff5fb;
+  border-color: #93b5d9;
+}
 
 .markdown-body > :first-child { margin-top: 0; }
 .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 {
@@ -81,3 +115,76 @@ body { margin: 0; background: #fff; }
 :root[data-layout="compact"] .markdown-body h1 { font-size: 1.65rem; }
 :root[data-layout="compact"] .markdown-body h2 { margin-top: 2.2rem; font-size: 1.32rem; }
 :root[data-layout="compact"] .markdown-body th, :root[data-layout="compact"] .markdown-body td { padding: .42rem .55rem; }
+
+/* —— 目录（右侧轨道 + 窄屏抽屉） —— */
+
+.toc-rail, .toc-drawer { display: none; }
+
+.markdown-body h2, .markdown-body h3, .markdown-body h4 { scroll-margin-top: 1.2rem; }
+
+.toc-list, .toc-list ol { margin: 0; padding: 0; list-style: none; }
+.toc-list { font-size: .84rem; line-height: 1.55; }
+.toc-list ol { margin: .15rem 0 .35rem; padding-left: .9rem; border-left: 1px solid #e7eef6; }
+.toc-list a {
+  display: block;
+  padding: .16rem 0;
+  color: #55667a;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.toc-list a:hover { color: #174d8a; }
+.toc-list a.active { color: #174d8a; font-weight: 600; }
+
+/* 宽屏：文章右侧悬浮目录 */
+@media (min-width: 84rem) {
+  .toc-rail {
+    display: block;
+    position: fixed;
+    top: 6.4rem;
+    right: calc((100vw - 50rem) / 2 - 15.5rem);
+    width: 14rem;
+    max-height: calc(100vh - 9rem);
+    overflow-y: auto;
+    padding-left: 1rem;
+    border-left: 1px solid #d9e2eb;
+  }
+  .toc-label {
+    display: block;
+    margin-bottom: .55rem;
+    color: #8aa0b8;
+    font-size: .74rem;
+    letter-spacing: .18em;
+  }
+  .toc-drawer { display: none; }
+}
+
+/* 窄屏：正文上方的可折叠目录 */
+@media (max-width: 83.99rem) {
+  .toc-drawer {
+    display: block;
+    margin: 0 0 1.8rem;
+    background: #fbfdff;
+    border: 1px solid #e1e6eb;
+    border-radius: .3rem;
+  }
+  .toc-drawer summary {
+    padding: .55rem .95rem;
+    color: #174d8a;
+    font-size: .92rem;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+  .toc-drawer summary::-webkit-details-marker { display: none; }
+  .toc-drawer[open] summary { border-bottom: 1px solid #e1e6eb; }
+  .toc-drawer .toc-list {
+    max-height: 62vh;
+    overflow-y: auto;
+    padding: .5rem .95rem .9rem;
+  }
+  .toc-drawer .toc-list ol { padding-left: .85rem; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}

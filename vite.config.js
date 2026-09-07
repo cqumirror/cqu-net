@@ -1,47 +1,45 @@
-import { readFileSync, readdirSync } from 'node:fs';
+import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 
-import { findGuideSource } from './src/guide-source.js';
+import { GUIDE_DIRECTORY, findGuidePdf, findGuideSource } from './src/guide-source.js';
 
-function versionedGuidePlugin() {
-  let rootDirectory;
-  let guide;
+function resolveAssets(config) {
+  const directory = resolve(config.root, 'public', GUIDE_DIRECTORY);
+  const filenames = readdirSync(directory);
 
-  function resolveGuide() {
-    guide = findGuideSource(readdirSync(rootDirectory));
-    return guide;
-  }
+  const guide = findGuideSource(filenames);
+  const pdf = findGuidePdf(filenames, guide.filename.replace(/\.md$/, ''));
+
+  const payload = { path: guide.publicPath };
+  if (pdf) payload.pdf = pdf.publicPath;
+  return payload;
+}
+
+function guideSourcePlugin() {
+  let config;
 
   return {
-    name: 'versioned-guide-source',
-    configResolved(config) {
-      rootDirectory = config.root;
-      resolveGuide();
+    name: 'guide-source',
+    configResolved(resolved) {
+      config = resolved;
     },
     configureServer(server) {
       server.middlewares.use('/guide-source.json', (_request, response) => {
-        const source = resolveGuide();
         response.setHeader('Content-Type', 'application/json; charset=utf-8');
-        response.end(JSON.stringify({ path: source.publicPath }));
+        response.end(JSON.stringify(resolveAssets(config)));
       });
     },
     generateBundle() {
-      const source = resolveGuide();
-      this.emitFile({
-        type: 'asset',
-        fileName: source.filename,
-        source: readFileSync(resolve(rootDirectory, source.filename)),
-      });
       this.emitFile({
         type: 'asset',
         fileName: 'guide-source.json',
-        source: JSON.stringify({ path: source.publicPath }),
+        source: JSON.stringify(resolveAssets(config)),
       });
     },
   };
 }
 
 export default defineConfig({
-  plugins: [versionedGuidePlugin()],
+  plugins: [guideSourcePlugin()],
 });

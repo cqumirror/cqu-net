@@ -1,3 +1,6 @@
 node_modules/
 dist/
+docs/
 IMG_3997.JPG
+.DS_Store
+.idea/
