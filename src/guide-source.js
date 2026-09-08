@@ -6,19 +6,42 @@ function publicPathFor(filename) {
   return `/${GUIDE_DIRECTORY}/${filename}`;
 }
 
-export function findGuideSource(filenames) {
-  const matches = filenames.filter((filename) => guidePattern.test(filename));
+function versionFor(filename) {
+  return filename.slice('重大校园网那些事V'.length, -'.md'.length);
+}
+
+function compareVersionsDescending(left, right) {
+  const leftParts = left.version.split('.').map(Number);
+  const rightParts = right.version.split('.').map(Number);
+  const length = Math.max(leftParts.length, rightParts.length);
+
+  for (let index = 0; index < length; index += 1) {
+    const difference = (rightParts[index] ?? 0) - (leftParts[index] ?? 0);
+    if (difference !== 0) return difference;
+  }
+
+  return right.filename.localeCompare(left.filename, 'zh-CN');
+}
+
+export function findGuideSources(filenames) {
+  const matches = filenames
+    .filter((filename) => guidePattern.test(filename))
+    .map((filename) => ({
+      filename,
+      publicPath: publicPathFor(filename),
+      version: versionFor(filename),
+    }));
 
   if (matches.length === 0) {
     throw new Error('No 重大校园网那些事V*.md guide was found in the guide directory.');
   }
 
-  if (matches.length > 1) {
-    throw new Error('Expected exactly one 重大校园网那些事V*.md guide in the guide directory.');
-  }
+  return matches.sort(compareVersionsDescending);
+}
 
-  const filename = matches[0];
-  return { filename, publicPath: publicPathFor(filename) };
+export function findGuideSource(filenames) {
+  const { filename, publicPath } = findGuideSources(filenames)[0];
+  return { filename, publicPath };
 }
 
 export function findGuidePdf(filenames, stem) {

@@ -17,7 +17,7 @@ function showError() {
   app.innerHTML = `
     <section class="message" role="alert">
       <h1>文档加载失败</h1>
-      <p>请确认根目录中仅保留一个“重大校园网那些事V*.md”文件，然后刷新页面。</p>
+      <p>请确认“public/guide”目录中至少包含一个“重大校园网那些事V*.md”文件，然后刷新页面。</p>
     </section>`;
 }
 
@@ -86,23 +86,38 @@ function setupToc(headings) {
   window.addEventListener('scroll', updateActiveSection, { passive: true });
 }
 
+function setupVersionSelector() {
+  const selector = app.querySelector('.version-selector');
+  if (!selector) return;
+
+  selector.addEventListener('change', () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('version', selector.value);
+    window.location.assign(url);
+  });
+}
+
 async function loadGuide() {
   try {
     const metadataResponse = await fetch('./guide-source.json');
     if (!metadataResponse.ok) throw new Error('Unable to load guide metadata.');
 
-    const { path, pdf } = await metadataResponse.json();
-    const guideHref = `.${path}`;
+    const { path, pdf, guides = [] } = await metadataResponse.json();
+    const requestedVersion = new URLSearchParams(window.location.search).get('version');
+    const guide = guides.find(({ version }) => version === requestedVersion)
+      ?? guides[0]
+      ?? { path, pdf, version: undefined };
+    const guideHref = `.${guide.path}`;
     const guideResponse = await fetch(guideHref);
     if (!guideResponse.ok) throw new Error('Unable to load guide source.');
 
     const downloads = [{
       href: guideHref,
-      filename: path.split('/').pop(),
+      filename: guide.path.split('/').pop(),
       label: 'Markdown',
     }];
-    if (pdf) {
-      downloads.push({ href: `.${pdf}`, filename: pdf.split('/').pop(), label: 'PDF' });
+    if (guide.pdf) {
+      downloads.push({ href: `.${guide.pdf}`, filename: guide.pdf.split('/').pop(), label: 'PDF' });
     }
 
     const markdown = await guideResponse.text();
@@ -111,12 +126,13 @@ async function loadGuide() {
     const headings = buildOutline(markdown);
 
     document.title = title;
-    app.innerHTML = `${renderSiteHeader({ downloads })}
+    app.innerHTML = `${renderSiteHeader({ downloads, versions: guides, selectedVersion: guide.version })}
       ${renderTocDrawer(renderTocHtml(headings))}
       <article class="markdown-body">${html}</article>
       ${renderTocRail(renderTocHtml(headings))}`;
 
     setupToc(headings);
+    setupVersionSelector();
 
     renderMathInElement(app, {
       delimiters: [

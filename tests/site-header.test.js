@@ -25,3 +25,17 @@ it('renders a download button per provided file with an offline hint', () => {
   expect(html).toContain('>Markdown</a>');
   expect(html).toContain('>PDF</a>');
 });
+
+it('renders a version selector with the newest guide selected', () => {
+  const html = renderSiteHeader({
+    versions: [
+      { version: '3.1.0', path: '/guide/重大校园网那些事V3.1.0.md' },
+      { version: '3.0.5', path: '/guide/重大校园网那些事V3.0.5.md' },
+    ],
+    selectedVersion: '3.1.0',
+  });
+
+  expect(html).toContain('<select class="version-selector"');
+  expect(html).toContain('value="3.1.0" selected');
+  expect(html).toContain('V3.0.5');
+});
