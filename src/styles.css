@@ -18,10 +18,10 @@ body { margin: 0; background: #fff; }
 }
 
 .site-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  flex-wrap: wrap;
-  gap: .7rem;
+  gap: .8rem 1.5rem;
   margin-bottom: 2.8rem;
   padding-bottom: .9rem;
   color: #174d8a;
@@ -30,7 +30,15 @@ body { margin: 0; background: #fff; }
   letter-spacing: .04em;
 }
 
-.site-header img { border-radius: 50%; object-fit: cover; }
+.site-brand {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .7rem;
+  min-width: 0;
+}
+
+.site-header img { object-fit: contain; }
 
 .version-control {
   display: inline-flex;
@@ -55,20 +63,62 @@ body { margin: 0; background: #fff; }
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: .5rem;
-  margin-left: auto;
+  justify-content: flex-end;
+  gap: .45rem;
 }
 
-.download-hint {
-  margin-right: .3rem;
+.download-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: .2rem;
+}
+
+.download-pair {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+  white-space: nowrap;
+}
+
+.checksum-button {
+  display: inline-flex;
+  align-items: baseline;
+  gap: .35rem;
+  padding: .12rem .35rem;
+  color: #6b7f94;
+  background: none;
+  border: 0;
+  cursor: copy;
+  font: inherit;
+  font-size: .7rem;
+}
+
+.checksum-button code {
+  color: #7c8fa2;
+  font-size: .95em;
+  font-family: "SFMono-Regular", Consolas, monospace;
+}
+
+.checksum-button:hover code, .checksum-button:focus-visible code { color: #1256a0; }
+.checksum-button[data-copied="true"]::after { content: "已复制"; color: #20704a; }
+
+.download-label, .checksum-label {
   color: #8aa0b8;
-  font-size: .76rem;
+  font-size: .72rem;
   letter-spacing: .08em;
   white-space: nowrap;
 }
 
+.checksum-label { margin-right: .05rem; }
+
 .download-button {
-  padding: .22rem .85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 5.25rem;
+  padding: .22rem .5rem;
   color: #1256a0;
   background: #f7faff;
   border: 1px solid #c3d7ea;
@@ -128,9 +178,33 @@ body { margin: 0; background: #fff; }
 .message h1 { margin: 0; color: #8e2730; font-size: 1.35rem; }
 .message p { margin-bottom: 0; }
 
+.site-footer {
+  margin-top: 4rem;
+  padding-top: 1rem;
+  color: #7c8fa2;
+  border-top: 1px solid #d9e2eb;
+  font-size: .72rem;
+  line-height: 1.65;
+  letter-spacing: .02em;
+  text-align: center;
+}
+
+.site-footer p { margin: .15rem 0; }
+.site-footer a { color: inherit; text-decoration-color: #b7c7d6; text-underline-offset: .15em; }
+.site-footer a:hover { color: #174d8a; }
+
+.site-copyright { margin-top: 0; }
+.site-license { margin-bottom: 0; }
+
 :root[data-layout="compact"] { font-size: 16px; }
 :root[data-layout="compact"] #app { width: min(100% - 2rem, 50rem); padding-top: 1.5rem; }
-:root[data-layout="compact"] .site-header { margin-bottom: 1.8rem; }
+:root[data-layout="compact"] .site-header {
+  grid-template-columns: 1fr;
+  align-items: start;
+  margin-bottom: 1.8rem;
+}
+:root[data-layout="compact"] .site-actions { align-items: flex-start; }
+:root[data-layout="compact"] .site-actions, :root[data-layout="compact"] .download-row { align-items: flex-start; justify-content: flex-start; }
 :root[data-layout="compact"] .markdown-body h1 { font-size: 1.65rem; }
 :root[data-layout="compact"] .markdown-body h2 { margin-top: 2.2rem; font-size: 1.32rem; }
 :root[data-layout="compact"] .markdown-body th, :root[data-layout="compact"] .markdown-body td { padding: .42rem .55rem; }

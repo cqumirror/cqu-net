@@ -3,6 +3,7 @@ import renderMathInElement from 'katex/contrib/auto-render';
 
 import { pageClassForWidth } from './layout.js';
 import { renderGuide } from './renderer.js';
+import { renderSiteFooter } from './site-footer.js';
 import { renderSiteHeader } from './site-header.js';
 import { buildOutline, renderTocHtml } from './toc.js';
 import './styles.css';
@@ -97,6 +98,20 @@ function setupVersionSelector() {
   });
 }
 
+function setupChecksumButtons() {
+  app.querySelectorAll('.checksum-button').forEach((button) => {
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(button.dataset.checksum);
+        button.dataset.copied = 'true';
+        window.setTimeout(() => { delete button.dataset.copied; }, 1600);
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  });
+}
+
 async function loadGuide() {
   try {
     const metadataResponse = await fetch('./guide-source.json');
@@ -115,9 +130,15 @@ async function loadGuide() {
       href: guideHref,
       filename: guide.path.split('/').pop(),
       label: 'Markdown',
+      sha256: guide.sha256,
     }];
     if (guide.pdf) {
-      downloads.push({ href: `.${guide.pdf}`, filename: guide.pdf.split('/').pop(), label: 'PDF' });
+      downloads.push({
+        href: `.${guide.pdf}`,
+        filename: guide.pdf.split('/').pop(),
+        label: 'PDF',
+        sha256: guide.pdfSha256,
+      });
     }
 
     const markdown = await guideResponse.text();
@@ -129,10 +150,12 @@ async function loadGuide() {
     app.innerHTML = `${renderSiteHeader({ downloads, versions: guides, selectedVersion: guide.version })}
       ${renderTocDrawer(renderTocHtml(headings))}
       <article class="markdown-body">${html}</article>
+      ${renderSiteFooter()}
       ${renderTocRail(renderTocHtml(headings))}`;
 
     setupToc(headings);
     setupVersionSelector();
+    setupChecksumButtons();
 
     renderMathInElement(app, {
       delimiters: [

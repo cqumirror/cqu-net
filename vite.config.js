@@ -1,8 +1,8 @@
-import { readdirSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 
-import { GUIDE_DIRECTORY, findGuidePdf, findGuideSources } from './src/guide-source.js';
+import { GUIDE_DIRECTORY, findGuidePdf, findGuideSources, sha256For } from './src/guide-source.js';
 
 function resolveAssets(config) {
   const directory = resolve(config.root, 'public', GUIDE_DIRECTORY);
@@ -13,7 +13,11 @@ function resolveAssets(config) {
     return {
       version: guide.version,
       path: guide.publicPath,
-      ...(pdf ? { pdf: pdf.publicPath } : {}),
+      sha256: sha256For(readFileSync(resolve(directory, guide.filename))),
+      ...(pdf ? {
+        pdf: pdf.publicPath,
+        pdfSha256: sha256For(readFileSync(resolve(directory, pdf.filename))),
+      } : {}),
     };
   });
 

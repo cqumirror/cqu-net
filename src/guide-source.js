@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 export const GUIDE_DIRECTORY = 'guide';
 
 const guidePattern = /^重大校园网那些事V.+\.md$/;
@@ -48,4 +50,8 @@ export function findGuidePdf(filenames, stem) {
   const filename = `${stem}.pdf`;
   if (!filenames.includes(filename)) return null;
   return { filename, publicPath: publicPathFor(filename) };
+}
+
+export function sha256For(content) {
+  return createHash('sha256').update(content).digest('hex');
 }
