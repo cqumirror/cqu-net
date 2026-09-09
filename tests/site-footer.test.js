@@ -17,3 +17,12 @@ it('renders CC BY-NC-SA 4.0 distribution terms linking to the license deed', () 
   expect(html).toContain('creativecommons.org/licenses/by-nc-sa/4.0');
   expect(html).toMatch(/rel="license\b/);
 });
+
+it('provides feedback and contact links', () => {
+  const html = renderSiteFooter();
+
+  expect(html).toContain('反馈与纠错');
+  expect(html).toContain('https://github.com/cqumirror/cqu-net/issues');
+  expect(html).toContain('mailto:piblic@lanunion.org.cn');
+  expect(html).toContain('piblic@lanunion.org.cn');
+});

@@ -1,3 +1,3 @@
 export function pageClassForWidth(width) {
-  return width < 700 ? 'compact' : 'comfortable';
+  return width < 768 ? 'compact' : 'comfortable';
 }

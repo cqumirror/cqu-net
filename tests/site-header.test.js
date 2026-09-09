@@ -3,7 +3,13 @@ import { expect, it } from 'vitest';
 import { renderSiteHeader } from '../src/site-header.js';
 
 it('uses the Lanunion logo in the page masthead', () => {
-  expect(renderSiteHeader()).toContain('src="./logo.svg"');
+  const html = renderSiteHeader();
+  expect(html).toContain('src="./logo.svg"');
+  expect(html).not.toContain('class="theme-toggle"');
+  expect(html).not.toContain('<select');
+  expect(html).toContain('class="theme-menu"');
+  expect(html).toContain('<summary>主题：跟随系统</summary>');
+  expect(html).toContain('data-theme-mode="dark"');
 });
 
 it('omits download buttons when no downloads are given', () => {
@@ -25,6 +31,8 @@ it('renders a download button per provided file with an offline hint', () => {
   expect(html).toContain('>Markdown</a>');
   expect(html).toContain('>PDF</a>');
   expect(html).toContain('class="download-pair"');
+  expect(html).toContain('class="download-menu"');
+  expect(html).toContain('<summary>离线版本下载</summary>');
 });
 
 it('renders a version selector with the newest guide selected', () => {

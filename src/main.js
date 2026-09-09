@@ -5,10 +5,18 @@ import { pageClassForWidth } from './layout.js';
 import { renderGuide } from './renderer.js';
 import { renderSiteFooter } from './site-footer.js';
 import { renderSiteHeader } from './site-header.js';
+import { applyTheme, chooseTheme, normalizeThemeMode, THEME_STORAGE_KEY } from './theme.js';
 import { buildOutline, renderTocHtml } from './toc.js';
 import './styles.css';
 
 const app = document.querySelector('#app');
+const systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+let themeMode = normalizeThemeMode(window.localStorage.getItem(THEME_STORAGE_KEY));
+let currentTheme = chooseTheme(
+  themeMode,
+  systemThemeQuery.matches,
+);
+applyTheme(currentTheme);
 
 function updateLayoutClass() {
   document.documentElement.dataset.layout = pageClassForWidth(window.innerWidth);
@@ -112,6 +120,47 @@ function setupChecksumButtons() {
   });
 }
 
+function setupThemeMenu() {
+  const menu = app.querySelector('.theme-menu');
+  if (!menu) return;
+
+  function updateTheme(nextMode) {
+    themeMode = normalizeThemeMode(nextMode);
+    currentTheme = chooseTheme(themeMode, systemThemeQuery.matches);
+    applyTheme(currentTheme);
+    window.localStorage.setItem(THEME_STORAGE_KEY, themeMode);
+    menu.querySelector('summary').textContent = `主题：${{ system: '跟随系统', light: '明亮', dark: '暗夜' }[themeMode]}`;
+    menu.querySelectorAll('.theme-menu-option').forEach((button) => {
+      button.setAttribute('aria-pressed', String(button.dataset.themeMode === themeMode));
+    });
+  }
+
+  menu.querySelectorAll('.theme-menu-option').forEach((button) => {
+    button.addEventListener('click', () => {
+      updateTheme(button.dataset.themeMode);
+      menu.open = false;
+    });
+  });
+  document.addEventListener('click', (event) => {
+    if (menu.open && !menu.contains(event.target)) menu.open = false;
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') menu.open = false;
+  });
+}
+
+function setupDownloadMenu() {
+  const menu = app.querySelector('.download-menu');
+  if (!menu) return;
+
+  document.addEventListener('click', (event) => {
+    if (menu.open && !menu.contains(event.target)) menu.open = false;
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') menu.open = false;
+  });
+}
+
 async function loadGuide() {
   try {
     const metadataResponse = await fetch('./guide-source.json');
@@ -147,7 +196,7 @@ async function loadGuide() {
     const headings = buildOutline(markdown);
 
     document.title = title;
-    app.innerHTML = `${renderSiteHeader({ downloads, versions: guides, selectedVersion: guide.version })}
+    app.innerHTML = `${renderSiteHeader({ downloads, versions: guides, selectedVersion: guide.version, theme: currentTheme, themeMode })}
       ${renderTocDrawer(renderTocHtml(headings))}
       <article class="markdown-body">${html}</article>
       ${renderSiteFooter()}
@@ -156,6 +205,8 @@ async function loadGuide() {
     setupToc(headings);
     setupVersionSelector();
     setupChecksumButtons();
+    setupThemeMenu();
+    setupDownloadMenu();
 
     renderMathInElement(app, {
       delimiters: [
@@ -174,4 +225,9 @@ async function loadGuide() {
 
 updateLayoutClass();
 window.addEventListener('resize', updateLayoutClass, { passive: true });
+systemThemeQuery.addEventListener('change', (event) => {
+  if (themeMode !== 'system') return;
+  currentTheme = chooseTheme('system', event.matches);
+  applyTheme(currentTheme);
+});
 loadGuide();

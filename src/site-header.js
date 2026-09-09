@@ -1,4 +1,5 @@
-export function renderSiteHeader({ downloads = [], versions = [], selectedVersion } = {}) {
+export function renderSiteHeader({ downloads = [], versions = [], selectedVersion, theme = 'light', themeMode = 'system' } = {}) {
+  const themeLabel = { system: '跟随系统', light: '明亮', dark: '暗夜' }[themeMode];
   const downloadPairs = downloads
     .map(({ href, filename, label, sha256 }) => {
       const compactChecksum = sha256 && `${sha256.slice(0, 8)}…${sha256.slice(-8)}`;
@@ -26,9 +27,20 @@ export function renderSiteHeader({ downloads = [], versions = [], selectedVersio
         <span class="site-title">重庆大学蓝盟</span>
         ${versionSelector}
       </div>
-      ${downloadPairs ? `<div class="site-actions">
-        <span class="download-label">离线文件</span>
-        <div class="download-row">${downloadPairs}</div>
-      </div>` : ''}
+      <div class="header-tools">
+        ${downloadPairs ? `<details class="download-menu">
+          <summary>离线版本下载</summary>
+          <div class="download-menu-panel">
+            <span class="download-label">离线文件</span>
+            <div class="download-row">${downloadPairs}</div>
+          </div>
+        </details>` : ''}
+        <details class="theme-menu">
+          <summary>主题：${themeLabel}</summary>
+          <div class="theme-menu-panel" role="group" aria-label="主题设置">
+            ${['system', 'light', 'dark'].map((mode) => `<button class="theme-menu-option" type="button" data-theme-mode="${mode}"${mode === themeMode ? ' aria-pressed="true"' : ''}>${{ system: '跟随系统', light: '明亮', dark: '暗夜' }[mode]}</button>`).join('')}
+          </div>
+        </details>
+      </div>
     </header>`;
 }
